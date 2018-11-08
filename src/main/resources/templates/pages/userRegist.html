@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample SpringBoot Application</title>
+</head>
+<body>
+    <h2>ユーザ登録画面</h2>
+    <form name="todoCreate" method="post" action="./list.html" th:action="@{/user/regist}">
+        <label>名前</label><br>
+        <input type="text" name="name" size="30 "maxlength="100"><br>
+        <label>会社・学校名</label><br>
+        <input type="text" name="organization" size="30 "maxlength="100"><br>
+        <label>メモ</label><br>
+        <textarea name="note" row="6" cols="50" maxlength="300"></textarea><br>
+        <input type="submit" value="登録">
+    </form>
+</body>
+</html>
