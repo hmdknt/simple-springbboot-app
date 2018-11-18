@@ -62,18 +62,18 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Nexus') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('release')) {
-                        echo "##################################################"
-                        echo "              Start Deploy to Nexus               "
-                        echo "##################################################"
-                        sh './gradlew publish'
-                    }
-                }
-            }
-        }
+//        stage('Deploy to Nexus') {
+//            steps {
+//                script {
+//                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('release')) {
+//                        echo "##################################################"
+//                        echo "              Start Deploy to Nexus               "
+//                        echo "##################################################"
+//                        sh './gradlew publish'
+//                    }
+//                }
+//            }
+//        }
     }
     
 //    post {
