@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample SpringBoot Application</title>
+</head>
+<body>
+    <h2>Todo登録画面</h2>
+    <form name="todoCreate" method="post" action="./list.html" th:action="@{/todo/regist}">
+        <label>タイトル</label><br>
+        <input type="text" name="title" size="30 "maxlength="100" required><br>
+        <label>説明</label><br>
+        <textarea name="description" row="6" cols="50" maxlength="300"></textarea><br>
+        <label>優先度</label><br>
+        <select id="priority" name="priority">
+            <option value="1">リアルタイム</option>
+            <option value="2">高</option>
+            <option value="3">通常以上</option>
+            <option value="4" selected>通常</option>
+            <option value="5">通常以下</option>
+            <option value="6">低</option>
+        </select><br>
+        <label>担当者</label><br>
+        <select id="userId" name="userId" required>
+            <option th:value="a">---</option>
+            <option th:each="user : ${userList}" th:value="${user.id}" th:text="${user.name}" th:selected="${user.id == id}">[[${user.name}]]</option>
+        </select><br>
+        <label>開始時刻</label><br>
+        <input type="datetime-local" id="start" name="startTime" required><br>
+        <label>終了時刻</label><br>
+        <input type="datetime-local" id="end" name="endTime" required><br>
+        <input type="submit" value="登録">
+    </form>
+</body>
+</html>

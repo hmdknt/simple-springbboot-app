@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample SpringBoot Application</title>
+</head>
+<body>
+    <h1>Todoアプリケーション</h1>
+    <form name="login" method="post" action="./list.html" th:action="@{/todo/list}">
+        <input type="submit" value="ログイン">
+    </form>
+</body>
+</html>

@@ -13,13 +13,54 @@ def DOCKER_IMAGE_VERSION='1.0'
 
 // Pipeline
 pipeline {
-    agent {
-        docker {
-            image "$NEXUS_HOST_NAME:$NEXUS_REPOSITORY_PORT/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION"
-            args "-e MYSQL_ROOT_PASSWORD=$ORG_GRADLE_PROJECT_inhouseRepositoryPassSub"
-            args "-p 3306:3306"
+    agent none
+
+    stages {
+        stage('start build container') {
+            agent {
+                docker {
+                    image "$NEXUS_HOST_NAME:$NEXUS_REPOSITORY_PORT/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION"
+                    args "-e MYSQL_ROOT_PASSWORD=$ORG_GRADLE_PROJECT_inhouseRepositoryPassSub"
+                    args "-p 3306:3306"
+                }
+            }
+            steps {
+                if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'test') {
+                        deleteDir()
+                }
+                checkout scm
+                env.SPRING_PROFILES_ACTIVE='test'
+                env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
+                env.TEST_DB_SCHEMA='sampledb'
+                env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
+            }
+            steps {
+                script {
+                    sh './gradlew build'
+                }
+            }
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('test')) {
+                        echo "##################################################"
+                        echo "              Start Deploy to Nexus               "
+                        echo "##################################################"
+                        sh './gradlew publish'
+                    }
+                }
+            }
         }
     }
+
+
+    // }
+    // agent {
+    //     docker {
+    //         image "$NEXUS_HOST_NAME:$NEXUS_REPOSITORY_PORT/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION"
+    //         args "-e MYSQL_ROOT_PASSWORD=$ORG_GRADLE_PROJECT_inhouseRepositoryPassSub"
+    //         args "-p 3306:3306"
+    //     }
+    // }
     
     //options {
     //    gitLabConnection('GitLab')
@@ -29,39 +70,39 @@ pipeline {
     //    gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
     //}
     
-    stages {
-        stage('docker confirm') {
-            steps {
-                sh 'java -version'
-            }
-        }
-        stage('clone source and setup env') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release') {
-                        deleteDir()
-                    }
-                    checkout scm
-                    env.SPRING_PROFILES_ACTIVE='test'
-                    env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
-                    env.TEST_DB_SCHEMA='sampledb'
-                    env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
-                }
-            }
-        }
-        stage('build, sonar, test report') {
-            steps {
-                script {
-                    timeout(time: 1,unit: 'HOURS') {
-                        if (env.BRANCH_NAME.startsWith('release')) {
-                            sh './gradlew build -x test'
-                        } else {
-                            sh './gradlew build -x test'
-                        }
-                    }
-                }
-            }
-        }
+    // stages {
+    //     stage('docker confirm') {
+    //         steps {
+    //             sh 'java -version'
+    //         }
+    //     }
+    //     stage('clone source and setup env') {
+    //         steps {
+    //             script {
+    //                 if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release') {
+    //                     deleteDir()
+    //                 }
+    //                 checkout scm
+    //                 env.SPRING_PROFILES_ACTIVE='test'
+    //                 env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
+    //                 env.TEST_DB_SCHEMA='sampledb'
+    //                 env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
+    //             }
+    //         }
+    //     }
+    //     stage('build, sonar, test report') {
+    //         steps {
+    //             script {
+    //                 timeout(time: 1,unit: 'HOURS') {
+    //                     if (env.BRANCH_NAME.startsWith('release')) {
+    //                         sh './gradlew build -x test'
+    //                     } else {
+    //                         sh './gradlew build -x test'
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
 //        stage('Deploy to Nexus') {
 //            steps {
 //                script {
@@ -74,7 +115,7 @@ pipeline {
 //                }
 //            }
 //        }
-    }
+    // }
     
 //    post {
 //        always {
