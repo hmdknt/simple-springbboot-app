@@ -24,15 +24,17 @@ pipeline {
                     args "-p 3306:3306"
                 }
             }
-            steps {
-                if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'test') {
-                        deleteDir()
-                }
-                checkout scm
-                env.SPRING_PROFILES_ACTIVE='test'
-                env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
-                env.TEST_DB_SCHEMA='sampledb'
-                env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
+            steps { 
+              script {
+                  if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'test') {
+                          deleteDir()
+                  }
+                  checkout scm
+                  env.SPRING_PROFILES_ACTIVE='test'
+                  env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
+                  env.TEST_DB_SCHEMA='sampledb'
+                  env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
+              }
             }
             steps {
                 script {
