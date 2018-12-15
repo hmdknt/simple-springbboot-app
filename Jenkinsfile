@@ -13,7 +13,7 @@ def DOCKER_IMAGE_VERSION='1.0'
 
 // Pipeline
 pipeline {
-    agent none
+    agent none
 
     stages {
         stage('start build container') {
