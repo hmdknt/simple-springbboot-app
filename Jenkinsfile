@@ -24,7 +24,14 @@ pipeline {
                     args "-p 3306:3306"
                 }
             }
-                    }
+        }
+        stage('test') {
+            steps {
+                script {
+                    echo 'aa'
+                }
+            }
+        }
     }
 
 
