@@ -33,6 +33,8 @@ pipeline {
                     env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
                     env.TEST_DB_SCHEMA='sampledb'
                     env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
+
+                    sh './gradlew build'
                 }
             }
         }
