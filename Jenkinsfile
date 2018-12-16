@@ -35,6 +35,14 @@ pipeline {
                     env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
 
                     sh './gradlew build'
+
+                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('test')) {
+                        echo "##################################################"
+                        echo "              Start Deploy to Nexus               "
+                        echo "##################################################"
+                        sh './gradlew publish'
+                    }
+
                 }
             }
         }
