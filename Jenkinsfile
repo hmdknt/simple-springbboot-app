@@ -14,9 +14,8 @@ def DOCKER_IMAGE_VERSION='1.0'
 // Pipeline
 pipeline {
     agent none
-
     stages {
-        stage('start build container') {
+        stage('Back-end') {
             agent {
                 docker {
                     image "$NEXUS_HOST_NAME:$NEXUS_REPOSITORY_PORT/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION"
@@ -24,15 +23,22 @@ pipeline {
                     args "-p 3306:3306"
                 }
             }
-        }
-        stage('test') {
             steps {
                 script {
-                    echo 'aa'
+                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'test') {
+                        deleteDir()
+                    }
+                    checkout scm
+                    env.SPRING_PROFILES_ACTIVE='test'
+                    env.ORG_GRADLE_PROJECT_databaseJdbcSchema='sampledb'
+                    env.TEST_DB_SCHEMA='sampledb'
+                    env.PROJECT_RC_VERSION = new Date().format('yyyyMMddHHmm')
                 }
             }
         }
     }
+}
+
 
 
     // }
@@ -116,5 +122,5 @@ pipeline {
 //            mattermostSend endpoint: MATTERMOST_WEBHOOK, color: UNSTABLE_COLOR, message: "UNSTABLE: ${env.JOB_NAME} #${env.BUILD_NUMBER}: (<${env.BUILD_URL}|Open>)"
 //        }
 //    }
-}
+//}
 
